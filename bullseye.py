@@ -11,59 +11,59 @@ from PyQt6.QtGui import (
     QRadialGradient, QCursor
 )
 
-C_BG        = QColor('#0a0a0a')
-C_RED       = QColor('#cc1a1a')
-C_RED_HOT   = QColor('#ff2222')
-C_RED_DIM   = QColor('#3a0000')
-C_GRID      = QColor('#191919')
+C_BG = QColor('#0a0a0a')
+C_RED = QColor('#cc1a1a')
+C_RED_HOT = QColor('#ff2222')
+C_RED_DIM = QColor('#3a0000')
+C_GRID = QColor('#191919')
 C_GRID_FINE = QColor('#131313')
-C_TEXT      = QColor('#dddddd')
-C_TEXT_DIM  = QColor('#4a4a4a')
-C_TRAJ_1    = QColor('#ff3333')
-C_TRAJ_2    = QColor('#ff8c00')
-C_WALL      = QColor('#252525')
+C_TEXT = QColor('#dddddd')
+C_TEXT_DIM = QColor('#4a4a4a')
+C_TRAJ_1 = QColor('#ff3333')
+C_TRAJ_2 = QColor('#ff8c00')
+C_WALL = QColor('#252525')
 C_WALL_EDGE = QColor('#404040')
-C_HIT       = QColor('#ff6600')
-C_RICOCHET  = QColor('#ffaa00')
-C_LAUNCH    = QColor('#33ff88')
-C_TARGET    = QColor('#ff3333')
+C_HIT = QColor('#ff6600')
+C_RICOCHET = QColor('#ffaa00')
+C_LAUNCH = QColor('#33ff88')
+C_TARGET = QColor('#ff3333')
 
-HANDLE_R    = 10
+HANDLE_R = 10
 
 
 # ── Physics constants ─────────────────────────────────────────────────────────
-G       = 9.81
+G = 9.81
 RHO_AIR = 1.225
-DT      = 0.002
-MAX_T   = 10.0
+DT = 0.002
+MAX_T = 10.0
 
 OBJECTS = {
     'Playing Card': {
         # Card thrown edge-on (spinning): Cd ~0.05 (thin disc edge-on)
         # Cd=1.4 is face-on tumbling — unrealistic for a skilled throw
-        'mass': 0.00178, 'cd': 0.05,  'area': 0.00581,   'cl': 0.60,
+        'mass': 0.00178, 'cd': 0.05, 'area': 0.00581, 'cl': 0.60,
         'restitution': 0.20, 'color': C_TRAJ_1, 'icon': 'CARD',
         'v0_max': 28.0
     },
     'Coin (nickel)': {
         # Coin spinning flat: Cd ~0.47 (disc face-on — coins tumble)
-        'mass': 0.0050,  'cd': 0.47, 'area': 0.000314,  'cl': 0.45,
+        'mass': 0.0050, 'cd': 0.47, 'area': 0.000314, 'cl': 0.45,
         'restitution': 0.60, 'color': QColor('#ffd700'), 'icon': 'COIN',
         'v0_max': 18.0
     },
     'Bottle Cap': {
-        'mass': 0.0018,  'cd': 0.60, 'area': 0.000855,  'cl': 0.55,
+        'mass': 0.0018, 'cd': 0.60, 'area': 0.000855, 'cl': 0.55,
         'restitution': 0.35, 'color': QColor('#aaaaff'), 'icon': 'CAP',
         'v0_max': 22.0
     },
     'Throwing Knife': {
         # Knife flies tip-first: Cd ~0.10 (streamlined body)
-        'mass': 0.200,   'cd': 0.10, 'area': 0.00040,   'cl': 0.25,
+        'mass': 0.200, 'cd': 0.10, 'area': 0.00040, 'cl': 0.25,
         'restitution': 0.65, 'color': QColor('#cccccc'), 'icon': 'KNIFE',
         'v0_max': 22.0
     },
     'Shuriken': {
-        'mass': 0.050,   'cd': 0.45, 'area': 0.00126,   'cl': 0.50,
+        'mass': 0.050, 'cd': 0.45, 'area': 0.00126, 'cl': 0.50,
         'restitution': 0.55, 'color': QColor('#aaddff'), 'icon': 'SHURK',
         'v0_max': 25.0
     },
@@ -96,18 +96,18 @@ def simulate(obj, v0, angle_deg, spin_rpm, launch_x, launch_y,
         if speed < 0.005:
             break
 
-        fd  = 0.5 * RHO_AIR * cd * area * speed * speed
+        fd = 0.5 * RHO_AIR * cd * area * speed * speed
         axd = -(fd / m) * (vx / speed)
         ayd = -(fd / m) * (vy / speed)
-        ow  = abs(omega) * math.exp(-0.04 * t)
-        sg  = 1 if omega >= 0 else -1
-        fm  = 0.5 * RHO_AIR * cl * area * ow * speed
+        ow = abs(omega) * math.exp(-0.04 * t)
+        sg = 1 if omega >= 0 else -1
+        fm = 0.5 * RHO_AIR * cl * area * ow * speed
         axm = sg * fm / m * (-vy / speed)
         aym = sg * fm / m * (vx / speed)
         ax, ay = axd + axm, -G + ayd + aym
 
-        nx  = x  + vx * DT + 0.5 * ax * DT * DT
-        ny  = y  + vy * DT + 0.5 * ay * DT * DT
+        nx = x  + vx * DT + 0.5 * ax * DT * DT
+        ny = y  + vy * DT + 0.5 * ay * DT * DT
         nvx = vx + ax * DT
         nvy = vy + ay * DT
 
@@ -170,8 +170,8 @@ def simulate(obj, v0, angle_deg, spin_rpm, launch_x, launch_y,
             skip = False
 
             for (d, qmin, qcur) in [
-                ( dx,  wx,        x), (-dx, -(wx+ww), -x),
-                ( dy,  wy,        y), (-dy, -(wy+wh), -y)
+                ( dx, wx,     x), (-dx, -(wx+ww), -x),
+                ( dy, wy,     y), (-dy, -(wy+wh), -y)
             ]:
                 if abs(d) < 1e-12:
                     if qcur < qmin:
@@ -230,9 +230,9 @@ def simulate(obj, v0, angle_deg, spin_rpm, launch_x, launch_y,
 # so  v₀ = F·Δt / m.
 #
 # Contact time depends on throwing style:
-#   - snap throw (card, cap):  Δt ≈ 0.05 s
-#   - full arm swing (knife):  Δt ≈ 0.12 s
-#   - coin flick:              Δt ≈ 0.04 s
+#   - snap throw (card, cap): Δt ≈ 0.05 s
+#   - full arm swing (knife): Δt ≈ 0.12 s
+#   - coin flick: Δt ≈ 0.04 s
 # We store Δt per object; for UI we expose force in Newtons (1–200 N range).
 
 CONTACT_TIME = {
@@ -286,12 +286,12 @@ def auto_aim(obj, obj_name, tx, ty, lx, ly, spin,
     closest-approach distance to target (tx, ty).
 
     Pass 1 — coarse: 20 force levels × 30 angles
-    Pass 2 — fine:   40 force sub-levels × 80 angle sub-levels around best
+    Pass 2 — fine: 40 force sub-levels × 80 angle sub-levels around best
     Returns dict {v0, angle, force, miss, pts}  or  None if miss > 20m.
     '''
     mass = obj['mass']
-    dx   = tx - lx
-    dy   = ty - ly
+    dx = tx - lx
+    dy = ty - ly
     dist = math.sqrt(dx*dx + dy*dy)
 
     # geometric angle hint (ignore drag — just direction to target)
@@ -313,9 +313,9 @@ def auto_aim(obj, obj_name, tx, ty, lx, ly, spin,
     angle_coarse = sorted(set(list(range(0, 85, 5)) + [int(a) for a in a_extras]))
 
     best_miss = float('inf')
-    best_f    = force_levels[len(force_levels)//2]
-    best_ang  = hint_ang
-    best_pts  = []
+    best_f = force_levels[len(force_levels)//2]
+    best_ang = hint_ang
+    best_pts = []
 
     # ── Pass 1: coarse ────────────────────────────────────────────────────
     for f in force_levels:
@@ -339,13 +339,13 @@ def auto_aim(obj, obj_name, tx, ty, lx, ly, spin,
         return   # completely off — no plausible trajectory exists
 
     # ── Pass 2: fine grid around best ─────────────────────────────────────
-    f_lo  = max(0.1,  best_f   * 0.6)
-    f_hi  = min(100,  best_f   * 1.7)
-    a_lo  = max(0.0,  best_ang - 15.0)
-    a_hi  = min(87.0, best_ang + 15.0)
+    f_lo = max(0.1, best_f   * 0.6)
+    f_hi = min(100, best_f   * 1.7)
+    a_lo = max(0.0, best_ang - 15.0)
+    a_hi = min(87.0, best_ang + 15.0)
 
     for fi in range(41):
-        f  = f_lo + (f_hi - f_lo) * fi / 40
+        f = f_lo + (f_hi - f_lo) * fi / 40
         v0 = force_to_v0(f, obj_name, mass)
 
         if v0 < 0.05 or v0 > 1000:
@@ -365,13 +365,13 @@ def auto_aim(obj, obj_name, tx, ty, lx, ly, spin,
 
     # ── Pass 3: ultra-fine zoom (only if still off by > 5 cm) ─────────────
     if best_miss > 0.05:
-        f_lo2  = max(0.05, best_f   * 0.85)
-        f_hi2  = min(100,  best_f   * 1.15)
-        a_lo2  = max(0.0,  best_ang - 5.0)
-        a_hi2  = min(87.0, best_ang + 5.0)
+        f_lo2 = max(0.05, best_f   * 0.85)
+        f_hi2 = min(100, best_f   * 1.15)
+        a_lo2 = max(0.0, best_ang - 5.0)
+        a_hi2 = min(87.0, best_ang + 5.0)
 
         for fi in range(51):
-            f  = f_lo2 + (f_hi2 - f_lo2) * fi / 50
+            f = f_lo2 + (f_hi2 - f_lo2) * fi / 50
             v0 = force_to_v0(f, obj_name, mass)
 
             if v0 < 0.05 or v0 > 1000:
@@ -413,8 +413,8 @@ class Viewport:
         # visible range (world coords)
         self.vx0 = 0.0
         self.vy0 = 0.0
-        self.vw  = float(world_w)   # visible width in metres
-        self.vh  = float(world_h)
+        self.vw = float(world_w)   # visible width in metres
+        self.vh = float(world_h)
         self._cw = cw
         self._ch = ch
         self._update()
@@ -459,8 +459,8 @@ class Viewport:
     def reset_zoom(self):
         self.vx0 = 0.0
         self.vy0 = 0.0
-        self.vw  = float(self.world_w)
-        self.vh  = float(self.world_h)
+        self.vw = float(self.world_w)
+        self.vh = float(self.world_h)
         self._update()
 
     # ── pan ───────────────────────────────────────────────────────────────
@@ -489,18 +489,18 @@ class Viewport:
 
 # ── Canvas ────────────────────────────────────────────────────────────────────
 class BallisticsCanvas(QWidget):
-    wall_placed     = pyqtSignal()
-    launch_moved    = pyqtSignal(float, float)   # wx, wy
-    target_moved    = pyqtSignal(float, float)
+    wall_placed = pyqtSignal()
+    launch_moved = pyqtSignal(float, float)   # wx, wy
+    target_moved = pyqtSignal(float, float)
 
     FRAME_MS = 16
 
     # drag target ids
-    _NONE   = 0
+    _NONE = 0
     _LAUNCH = 1
     _TARGET = 2
-    _WALL   = 3
-    _PAN    = 4
+    _WALL = 3
+    _PAN = 4
 
     def __init__(self):
         super().__init__()
@@ -511,12 +511,12 @@ class BallisticsCanvas(QWidget):
         self.world_h = 20.0
         self.vp = Viewport(self.world_w, self.world_h, 800, 500)
 
-        self.walls        = []
+        self.walls = []
         self.placing_wall = False
-        self._wall_start  = None
-        self._mouse_pos   = None
+        self._wall_start = None
+        self._mouse_pos = None
 
-        self.trajectories   = []
+        self.trajectories = []
         self.playback_speed = 1.0
 
         self._timer = QTimer(self)
@@ -529,7 +529,7 @@ class BallisticsCanvas(QWidget):
         self.target_y = 1.5
 
         # interaction state
-        self._drag_what  = self._NONE
+        self._drag_what = self._NONE
         self._pan_origin = None   # canvas pixel origin for pan gesture
 
     # ── playback ──────────────────────────────────────────────────────────
@@ -605,7 +605,7 @@ class BallisticsCanvas(QWidget):
         btn = ev.button()
 
         if btn == Qt.MouseButton.MiddleButton:
-            self._drag_what  = self._PAN
+            self._drag_what = self._PAN
             self._pan_origin = (cx, cy)
             self.setCursor(Qt.CursorShape.SizeAllCursor)
 
@@ -866,7 +866,7 @@ class BallisticsCanvas(QWidget):
             (28, QColor(70, 0, 0, 50)),
             (20, QColor(130, 0, 0, 70)),
             (12, QColor(190, 10, 10, 90)),
-            (6,  C_RED_HOT)
+            (6, C_RED_HOT)
         ]:
             p.setPen(QPen(col, 1))
             p.setBrush(QBrush(QColor(col.red(), col.green(), col.blue(), 25)))
@@ -1148,16 +1148,16 @@ class StyledCombo(QComboBox):
 
 # ── Control panel ─────────────────────────────────────────────────────────────
 class ControlPanel(QWidget):
-    launch_requested   = pyqtSignal(dict)
-    compare_requested  = pyqtSignal(dict)
-    clear_requested    = pyqtSignal()
-    wall_mode_toggled  = pyqtSignal(bool)
-    clear_walls_req    = pyqtSignal()
-    speed_changed      = pyqtSignal(float)
-    zoom_reset_req     = pyqtSignal()
+    launch_requested = pyqtSignal(dict)
+    compare_requested = pyqtSignal(dict)
+    clear_requested = pyqtSignal()
+    wall_mode_toggled = pyqtSignal(bool)
+    clear_walls_req = pyqtSignal()
+    speed_changed = pyqtSignal(float)
+    zoom_reset_req = pyqtSignal()
     launch_pos_changed = pyqtSignal(float, float)
     target_pos_changed = pyqtSignal(float, float)
-    aim_requested      = pyqtSignal(dict)
+    aim_requested = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
@@ -1414,7 +1414,7 @@ class ControlPanel(QWidget):
         # stats
         L.addWidget(_section('LAST THROW'))
 
-        self.lbl_stats = QLabel('Range: \u2014\nPeak:  \u2014\nTime:  \u2014')
+        self.lbl_stats = QLabel('Range: \u2014\nPeak: \u2014\nTime: \u2014')
         self.lbl_stats.setStyleSheet(
             'color:#6e2222;font-family:"Courier New";font-size:9px;'
             'line-height:150%;padding:2px 0;'
@@ -1429,7 +1429,7 @@ class ControlPanel(QWidget):
 
     # ── internal slots ─────────────────────────────────────────────────────
     def _on_obj(self, idx):
-        obj  = list(OBJECTS.values())[idx]
+        obj = list(OBJECTS.values())[idx]
         name = list(OBJECTS.keys())[idx]
 
         self.lbl_info.setText(
@@ -1438,15 +1438,15 @@ class ControlPanel(QWidget):
         self._update_v0_display(name, obj['mass'])
 
     def _on_force(self, raw_n):
-        idx  = self.combo.currentIndex()
+        idx = self.combo.currentIndex()
         name = list(OBJECTS.keys())[idx]
-        obj  = list(OBJECTS.values())[idx]
+        obj = list(OBJECTS.values())[idx]
 
         self.val_f.setText(f'{raw_n} N')
         self._update_v0_display(name, obj['mass'])
 
     def _update_v0_display(self, obj_name, mass):
-        f  = self.sld_f.value()
+        f = self.sld_f.value()
 
         v0 = force_to_v0(f, obj_name, mass)
 
@@ -1465,15 +1465,15 @@ class ControlPanel(QWidget):
         self.target_pos_changed.emit(self.spn_tx.value(), self.spn_ty.value())
 
     def _params(self):
-        idx  = self.combo.currentIndex()
+        idx = self.combo.currentIndex()
         name = list(OBJECTS.keys())[idx]
-        obj  = OBJECTS[name]
+        obj = OBJECTS[name]
         force = self.sld_f.value()
-        v0    = force_to_v0(force, name, obj['mass'])
+        v0 = force_to_v0(force, name, obj['mass'])
 
         return {
             'name': name, 'obj': obj,
-            'v0': v0,   'force': force,
+            'v0': v0, 'force': force,
             'angle': self.sld_a.value(),
             'spin': self.sld_s.value(),
             'bounces': self.sld_b.value(),
@@ -1520,16 +1520,16 @@ class ControlPanel(QWidget):
 
         self.sld_f.setValue(max(1, min(200, frc)))
         # update v0 display
-        idx  = self.combo.currentIndex()
+        idx = self.combo.currentIndex()
         name = list(OBJECTS.keys())[idx]
-        obj  = list(OBJECTS.values())[idx]
+        obj = list(OBJECTS.values())[idx]
 
         self._update_v0_display(name, obj['mass'])
 
         miss = result['miss']
-        ok   = miss < 0.15
-        col  = '#448844' if ok else '#886600'
-        sym  = '\u2713' if ok else '\u25b3'
+        ok = miss < 0.15
+        col = '#448844' if ok else '#886600'
+        sym = '\u2713' if ok else '\u25b3'
 
         self.lbl_aim.setText(
             f'{sym} angle {result["angle"]:.1f}\u00b0  '
@@ -1552,8 +1552,8 @@ class ControlPanel(QWidget):
         tt = pts[-1][2]
 
         self.lbl_stats.setText(
-            f'Object: {name}\nRange:  {mx:.1f} m\n'
-            f'Peak:   {my:.1f} m\nTime:   {tt:.2f} s'
+            f'Object: {name}\nRange: {mx:.1f} m\n'
+            f'Peak: {my:.1f} m\nTime: {tt:.2f} s'
         )
 
 
@@ -1741,7 +1741,7 @@ class BullseyeApp(QMainWindow):
 
     def _clear(self):
         self.canvas.clear_trajectories()
-        self.panel.lbl_stats.setText('Range: \u2014\nPeak:  \u2014\nTime:  \u2014')
+        self.panel.lbl_stats.setText('Range: \u2014\nPeak: \u2014\nTime: \u2014')
 
     def _wall_mode(self, on):
         self.canvas.set_placing_wall(on)
@@ -1775,7 +1775,7 @@ def main():
         sys.exit(app.exec())
     except Exception as exc:
         print(f'[BULLSEYE] startup error: {exc}', file=sys.stderr)
-        print('Ensure PyQt6 is installed:  pip install PyQt6', file=sys.stderr)
+        print('Ensure PyQt6 is installed: pip install PyQt6', file=sys.stderr)
 
         sys.exit(1)
 
